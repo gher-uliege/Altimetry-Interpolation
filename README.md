@@ -27,7 +27,7 @@ The along track data selected are *vfec* product, the which stands for Validated
 
 ## Data download
 
-The gzipped netCDF files are downloaded from AVISO FTP server and decompressed.
+The gzipped netCDF files are downloaded from [AVISO FTP server](ftp.aviso.altimetry.fr) and decompressed.
 The directory structure is kept identical to AVISO inside a Data directory:
 
 ${DATADIR}/regional-mediterranean/delayed-time/along-track/filtered/adt/al
