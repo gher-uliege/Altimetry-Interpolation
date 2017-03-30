@@ -64,8 +64,9 @@ The example shows the field corresponding to May 25, 2014. Comparisons with exis
 
 ## Computation time
 
-| Spatial resolution (° x °) | Temporal resolution (days) | Time  (s) | Allocation   |  
-|----------------------------|----------------------------|-----------|---|
+| Spatial resolution  | Temporal resolution | Time   | Allocation   |  
+|:--------------------------:|:--------------------------:|-----------|---|
+| (° x °)                    | (days)                     | (s)       |    |
 | 1 x 1                      | 2                          | 6.130323  | 914.89 k allocations: 424.083 MB, 23.83% gc time |
 | 1 x 1                      | 1                          | 15.206535 | 1.39 M allocations: 923.716 MB, 4.65% gc time |
 | 1 x 0.5                    | 1                          | 18.585559 | 2.27 M allocations: 1.950 GB, 4.31% gc time |
