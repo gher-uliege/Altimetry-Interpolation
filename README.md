@@ -62,4 +62,14 @@ The example shows the field corresponding to May 25, 2014. Comparisons with exis
 
 ![ADT field](figures/ADT_divand_20140525.png?raw=true "Interpolated field of ADT")
 
+## Computation time
+
+| Spatial resolution (° x °) | Temporal resolution (days) | Time  (s) | Allocation   |  
+|----------------------------|----------------------------|-----------|---|
+| 1 x 1                      | 2                          |           |   |
+|                            |                            |           |   |
+|                            |                            |           |   |
+
+
+
 
