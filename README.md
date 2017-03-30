@@ -15,9 +15,12 @@ Provided by [AVISO](http://www.aviso.altimetry.fr/en/data.html). For a given day
 
 The following image shows the data coverage obtained if we combine all the measurements between May 5 and June 4, 2014.
 
+![ADT data](figures/ADT_20140515_20140604.png?raw=true)
+
 ## Variable
 
 In this application we interpolate the *Absolute Dynamic Topography* (ADT), which is computed as the sum of the Sea Level Anomaly (SLA) and the Mean Dynamic Topography (MDT).
+
 
 ## Preprocessing
 
@@ -38,7 +41,25 @@ where al represent the mission (here: Altika).
 
 Among all the netCDF files, only the content of those corresponding to the selected period are read and then written into a simple text file. [This step](./python/plot_AVISO_data.ipynb) is written in python but could be easily translated to Julia.
 
+## Parameters
+
+* Correlation lengths: <br>
+len = (1°, 1°, 4 days);
+* Obs. error variance normalized by the background error variance <br>
+epsilon2 = 1;
+* Output grid: <br>
+Time: 1 day<br>
+Space: tested from 1° x 1° to 0.25° x 0.25°. 
+
 ## Divand execution
 
 A [Julia script](divand_altimetry.ipynb) reads the data, prepare the analysis parameters and run the interpolation.
+
+# Results 
+
+The outputs are converted to netCDF.<br>
+The example shows the field corresponding to May 25, 2014. Comparisons with existing gridded field will be performed.
+
+![ADT field](figures/ADT_divand_20140525.png?raw=true "Interpolated field of ADT")
+
 
