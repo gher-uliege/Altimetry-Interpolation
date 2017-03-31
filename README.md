@@ -80,4 +80,7 @@ The example shows the field corresponding to May 25, 2014. Comparisons with exis
 | 0.5 x 0.5                  | 1                          | 27.129639 | 4.03 M allocations: 3.907 GB, 5.55% gc time | 
 | 0.5 x 0.25                 | 1                          | 74.552338 | 7.51 M allocations: 9.136 GB, 3.28% gc time |
 | 0.25 x 0.25                | 1                          | 174.315756|14.42 M allocations: 19.238 GB, 4.64% gc time|
-| 0.25 x 0.25                | 1                          | 195.944418|14.43 M allocations: 19.221 GB, 2.23% gc time|
+| 0.125 x 0.125              | 1                          | error |
+
+OutOfMemoryError()
+ in factorize_p!(::Base.SparseArrays.CHOLMOD.Sparse{Float64}, ::Float64, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Array{UInt8,1}) at ./sparse/cholmod.jl:749
