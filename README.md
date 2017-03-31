@@ -11,16 +11,23 @@ The first test were performed on a period around May 25, 2014, since we have a g
 
 # Data
 
-Provided by [AVISO](http://www.aviso.altimetry.fr/en/data.html). For a given day, severall altimetric mission are available, and the idea is to combine the measurements from those satellite.
+## Along-track measurements 
+
+Provided by [AVISO](http://www.aviso.altimetry.fr/en/data.html) and [CMEMS](). For a given day, severall altimetric mission are available, and the idea is to combine the measurements from those satellite.
 
 The following image shows the data coverage obtained if we combine all the measurements between May 5 and June 4, 2014.
 
 ![ADT data](figures/ADT_20140515_20140604.png?raw=true)
 
+## Gridded fields
+
+The interpolated fields are also provided by AVISO and CMEMS. We download the product *SEALEVEL_MED_SLA_MAP_L4_REP_OBSERVATIONS_008_029* from CMEMS for the year 2014.
+
+These daily fields have a spatial resolution of 
+
 ## Variable
 
 In this application we interpolate the *Absolute Dynamic Topography* (ADT), which is computed as the sum of the Sea Level Anomaly (SLA) and the Mean Dynamic Topography (MDT).
-
 
 ## Preprocessing
 
@@ -72,4 +79,5 @@ The example shows the field corresponding to May 25, 2014. Comparisons with exis
 | 1 x 0.5                    | 1                          | 18.585559 | 2.27 M allocations: 1.950 GB, 4.31% gc time |
 | 0.5 x 0.5                  | 1                          | 27.129639 | 4.03 M allocations: 3.907 GB, 5.55% gc time | 
 | 0.5 x 0.25                 | 1                          | 74.552338 | 7.51 M allocations: 9.136 GB, 3.28% gc time |
-
+| 0.25 x 0.25                | 1                          | 174.315756|14.42 M allocations: 19.238 GB, 4.64% gc time|
+| 0.25 x 0.25                | 1                          | 195.944418|14.43 M allocations: 19.221 GB, 2.23% gc time|
