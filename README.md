@@ -82,5 +82,8 @@ The example shows the field corresponding to May 25, 2014. Comparisons with exis
 | 0.25 x 0.25                | 1                          | 174.315756|14.42 M allocations: 19.238 GB, 4.64% gc time|
 | 0.125 x 0.125              | 1                          | error |
 
+Notes:
+1. the time necessary to perform the case 0.25 x 0.25 strongly varies without any apparent reason, range from 170 to more than 400 seconds.
+2. error message 
 OutOfMemoryError()
  in factorize_p!(::Base.SparseArrays.CHOLMOD.Sparse{Float64}, ::Float64, ::Base.SparseArrays.CHOLMOD.Factor{Float64}, ::Array{UInt8,1}) at ./sparse/cholmod.jl:749
