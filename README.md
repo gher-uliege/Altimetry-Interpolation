@@ -1,4 +1,4 @@
-# Settings
+# Regional settings
 
 ## Domain of interest
 
@@ -7,7 +7,6 @@ The Mediterranean Sea is a region rich of mesoscale features. At the same time t
 ## Period of interest
 
 The first test were performed on a period around May 25, 2014, since we have a good data set of in situ measurements to validate the result.
-
 
 # Data
 
