@@ -68,6 +68,13 @@ class Track(object):
         m.scatter(self.lon, self.lat, c=self.adt, latlon=True, **kwargs)
         
     def write_textfile(self, filename):
+        """
+        Write the coordinates and measurements to an ascii file
+
+        If the file doesnt't exist, it is created
+        :param filename: path to the file
+        :type filename: str
+        """
         if not os.path.exists(filename):
             logging.info("Creating new file {0}".format(filename))
             
@@ -80,6 +87,12 @@ class Track(object):
         Write a Diva2D file: lon | lat | field | weight
         where the weights are computed using the time difference between the actual measurement and 
         the mean time of the considered period
+        :param filename: path to the file
+        :type filename: str
+        :param timescale: temporal scale for the weight smoothing
+        :type timescale: float
+        :param timemid: central time of the considered period
+        :type timeid: float (in days since January 1st, 1950)
         """
         timeweight = self.compute_time_weights(timescale, timemid)
         # self.timeweight = np.exp( - abs(self.time - timemid) / timescale)
@@ -90,6 +103,81 @@ class Track(object):
         with open(filename, 'a') as f:
             for lon, lat, adt, weight in zip(self.lon, self.lat, self.adt, timeweight):
                 f.write(' '.join((str(lon), str(lat), str(adt), str(weight), '\n')))
+
+class AltimetryField(object):
+    """
+    Class to represent a 2D gridded field of altimetry
+
+    Variable can be SLA, ADT, MDT. An error field can also be available.
+    """
+
+    def __init__(self, lon=None, lat=None, time=None, field=None, error=None):
+        self.lon = lon
+        self.lat = lat
+        self.time = time
+        self.field = field
+        self.error = error
+
+    def add_to_plot_simple(self, m=None):
+
+        pcm = plt.pcolormesh(self.lon, self.lat, self.field)
+        return pcm
+
+    def add_to_plot(self, figname, figtitle, m=None,
+                    meridians=None, parallels=None,
+                    vmin=-0.2, vmax=0.2,
+                    cmap=plt.cm.RdYlBu_r,
+                    **kwargs):
+        """
+        Create pcolor plot of the Sea Level Anomaly field
+        and generate a figure
+        """
+        llon, llat = np.meshgrid(self.lon, self.lat)
+        fig = plt.figure(figsize=(6, 6))
+        ax = plt.subplot(111)
+
+        if m:
+            m.ax = ax
+            pcm = m.pcolormesh(llon, llat, self.field,
+                         latlon=True, cmap=cmap, vmin=vmin, vmax=vmax, zorder=3, **kwargs)
+
+            # Add lines, coastline etc
+            m.drawmeridians(meridians, labels=[0, 0, 0, 1], linewidth=.2, zorder=2)
+            m.drawparallels(parallels, labels=[1, 0, 0, 0], linewidth=.2, zorder=2)
+            m.drawcoastlines(linewidth=.2, zorder=4)
+
+        else:
+            pcm = plt.pcolormesh(llon, llat, self.field, vmin=vmin, vmax=vmax, **kwargs)
+
+        cbar = plt.colorbar(pcm, shrink=.5, extend='both')
+        cbar.set_label("m", fontsize=12, rotation=0)
+        plt.title(figtitle)
+        plt.savefig(figname, dpi=300)
+        # plt.show()
+        plt.close()
+
+    def from_aviso_file(self, filename):
+        """
+        Read gridded altimetry field from a netCDF file
+        :param filename: path to the file
+        :return: str
+        """
+
+        if os.path.exists(filename):
+            with netCDF4.Dataset(filename, 'r') as nc:
+                self.lon = nc.variables['lon'][:]
+                self.lat = nc.variables['lat'][:]
+                self.time = nc.variables['time'][:]
+                self.field = nc.variables['sla'][:].squeeze()
+                self.error = nc.variables['err'][:].squeeze()
+                # Change longitude so that they lie between -180 and 180
+                self.lon[self.lon > 180.] -= 360.
+                timeunits = nc.variables['time'].units
+                self.filetime = netCDF4.num2date(self.time, timeunits)
+
+                return self
+        else:
+            logging.warning("File does not exist")
 
 
 def prepare_datestrings(year, month, day, interval):
