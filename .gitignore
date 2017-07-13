@@ -1,3 +1,4 @@
+.idea
 python/logs
 data/*.dat
 figures
