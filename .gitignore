@@ -1,5 +1,5 @@
 python/logs
-data/
+data/*.dat
 figures
 results
 python/.ipynb_checkpoints/
