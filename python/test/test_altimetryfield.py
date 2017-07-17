@@ -1,5 +1,5 @@
 import os
-import shutil
+import numpy as np
 import unittest
 import divaaltimetry
 import matplotlib.pyplot as plt
@@ -9,7 +9,8 @@ from mpl_toolkits.basemap import Basemap
 class TestAltimetryField(unittest.TestCase):
 
     def setUp(self):
-        self.avisofile = "../data/dt_med_allsat_msla_h_20140221_20140829.nc"
+        self.avisofile = "../../data/dt_med_allsat_msla_h_20140221_20140829.nc"
+        self.divafile = "../../data/data_20140717_20140806.nc"
         self.noncfile = "./nofile.nc"
         self.figdir = "./figures/"
 
@@ -28,7 +29,7 @@ class TestAltimetryField(unittest.TestCase):
         self.assertTrue(field.field is None)
         self.assertTrue(field.error is None)
 
-    def test_read_file(self):
+    def test_read_avisofile(self):
         field = divaaltimetry.AltimetryField().from_aviso_file(self.avisofile)
         self.assertEqual(field.time, 23427)
         self.assertEqual(len(field.lon), 344)
@@ -44,11 +45,20 @@ class TestAltimetryField(unittest.TestCase):
         self.assertEqual(field.error.min(), 0.0025)
         self.assertAlmostEqual(field.error.mean(), 0.00545835648148)
 
+    def test_read_divafile(self):
+        field = divaaltimetry.AltimetryField().from_diva2d_file(self.divafile)
+        self.assertEqual(len(field.lon), 426)
+        self.assertEqual(len(field.lat), 161)
+        self.assertEqual(field.lon[10], -4.5)
+        self.assertEqual(np.round(field.lon[-7]), 36.)
+        self.assertEqual(np.floor(field.lat[26]), 32.)
+        self.assertAlmostEqual(field.field.mean(), 0.01042658344120)
+        self.assertAlmostEqual(field.error.mean(), 0.0349892154988)
+        # Need to solve issue with round and floor
+
     def test_plot(self):
-        fig = plt.figure(figsize=(10, 10))
         field = divaaltimetry.AltimetryField().from_aviso_file(self.avisofile)
-        field.add_to_plot()
-        plt.savefig(os.path.join(self.figdir, 'test.png'))
+        field.add_to_plot(os.path.join(self.figdir, 'test.png'))
         self.assertTrue(os.path.exists(os.path.join(self.figdir, 'test.png')))
 
     def test_read_nonexisting_file(self):
