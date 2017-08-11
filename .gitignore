@@ -1,6 +1,7 @@
 .idea
 python/logs
 data/*.dat
+data/SEALEVEL_MED_PHY_L3_REP_OBSERVATIONS_008_049/
 figures
 results
 python/.ipynb_checkpoints/
