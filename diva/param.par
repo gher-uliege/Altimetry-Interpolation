@@ -1,5 +1,5 @@
 # Correlation Length lc in km or degree??? according to param icoordchange
-2
+.5
 # icoordchange (=0 if position of data in km ; =1 if position of data in degree)
 2
 # ispec (output files required, comments to come)
@@ -21,6 +21,6 @@
 # valex (exclusion value)
 -99
 # snr signal to noise ratio
-0.5
+1.	
 # varbak variance of the background field 2.5
-1
+1.
