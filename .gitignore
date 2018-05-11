@@ -1,5 +1,6 @@
 .idea
 python/logs
+data/AVISO
 data/*.dat
 data/SEALEVEL_MED_PHY_L3_REP_OBSERVATIONS_008_049/
 figures
