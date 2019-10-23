@@ -1,6 +1,5 @@
 module DivandAltimetry
-
-using divand
+using DIVAnd
 using NCDatasets
 using PyPlot
 
@@ -24,33 +23,55 @@ end;
 
 
 """
+Generate a list of netCDF file paths located within a directory `datadir`
+"""
+function get_file_list(datadir::String, year::Int=0)::Array
+    if year == 0
+        # Will find all the files
+        yearstring = ""
+    else
+        # Will find only the files for the selected year
+        yearstring = string(year)
+    end
+
+    filelist = []
+    for (root, dirs, files) in walkdir(datadir)
+        for file in files
+            if endswith(file, ".nc") & (occursin(yearstring, root))
+                push!(filelist, joinpath(root, file));
+            end
+        end
+    end
+    @info("Found $(length(filelist)) files")
+    return filelist
+end
+
+
+"""
     loadaviso_alongtrack(datafile, varname)
 
 Load the coordinates (longitude, latitude, time) and the selected variable
 (SLA by default) from a single netCDF file.
 
 """
-function loadaviso_alongtrack(datafile::String, varname::String="SLA")
+function loadaviso_alongtrack(datafile::String, stdname::String="sea_surface_height_above_sea_level")
 
     if isfile(datafile)
-        ds = Dataset(datafile, "r");
-        # Get coordinates
-        obslon = ds["longitude"][:];
-        obslat = ds["latitude"][:];
-        obstime = ds["time"][:];
-        obsval = ds[varname][:];
-        obsdepth = zeros(obsval);
-        # Shift longitudes
-        obslon = shiftlon.(obslon);
-        close(ds)
+        Dataset(datafile, "r") do ds
+            # Get coordinates
+            obslon = coalesce.(NCDatasets.varbyattrib(ds, standard_name="longitude")[1][:])
+            obslat = coalesce.(NCDatasets.varbyattrib(ds, standard_name="latitude")[1][:]);
+            obstime = coalesce.(NCDatasets.varbyattrib(ds, standard_name="time")[1][:]);
+            obsval = coalesce.(NCDatasets.varbyattrib(ds, standard_name=stdname)[1][:], NaN);
+            # Shift longitudes
+            obslon = DivandAltimetry.shiftlon.(obslon);
+        end
     else
-        obsval,obslon,obslat,obsdepth,obstime = nothing, nothing, nothing, nothing, nothing
+        obsval,obslon,obslat,obstime = nothing, nothing, nothing, nothing
     end
 
-    return obsval,obslon,obslat,obsdepth,obstime
+    return obsval,obslon,obslat,obstime
 end;
-
-
 
 """
     loadaviso_alongtrack(filelist, varname)
@@ -59,28 +80,27 @@ Load the coordinates (longitude, latitude, time) and the selected variable
 (SLA by default) from a list of netCDF files.
 
 """
-function loadaviso_alongtrack(filelist::AbstractVector, varname::String="SLA")
+function loadaviso_alongtrack(filelist::AbstractVector, stdname::String="sea_surface_height_above_sea_level")
 
     nfiles = length(filelist);
     if nfiles == 0
         warn("Empty file list");
-        obsvallist,obslonlist,obslatlist,obsdepthlist,obstimelist =
-        nothing, nothing, nothing, nothing, nothing;
+        obsvallist,obslonlist,obslatlist,obstimelist =
+        nothing, nothing, nothing, nothing;
     else
-        obsvallist,obslonlist,obslatlist,obsdepthlist,obstimelist = loadaviso_alongtrack(filelist[1], varname)
+        obsvallist,obslonlist,obslatlist,obstimelist = loadaviso_alongtrack(filelist[1], stdname)
         if nfiles > 1
             for datafile in filelist[2:end]
-                obsval,obslon,obslat,obsdepth,obstime = loadaviso_alongtrack(datafile, varname)
+                obsval,obslon,obslat,obstime = loadaviso_alongtrack(datafile, stdname)
                 obslonlist = vcat(obslonlist, obslon);
                 obslatlist = vcat(obslatlist, obslat);
-                obsdepthlist = vcat(obsdepthlist, obsdepth);
                 obstimelist = vcat(obstimelist, obstime);
                 obsvallist = vcat(obsvallist, obsval);
             end
         end
     end;
 
-    return obsvallist,obslonlist,obslatlist,obsdepthlist,obstimelist
+    return obsvallist,obslonlist,obslatlist,obstimelist
 end;
 
 """
@@ -90,21 +110,21 @@ Load the coordinates (longitude, latitude, time) and the gridded field
 representing the selected variable (SLA by default) from a netCDF file.
 
 """
-function loadaviso_gridded(datafile::String, varname::String="sla")
+function loadaviso_gridded(datafile::String, stdname::String="sea_surface_height_above_sea_level")
 
     if isfile(datafile)
-        ds = Dataset(datafile, "r");
-        # Get coordinates
-        gridlon = ds["lon"][:];
-        gridlat = ds["lat"][:];
-        gridtime = ds["time"][:];
-        gridval = ds[varname][:,:,1];
-        griderr = ds["err"][:,:,1]
-        # Shift longitudes
-        gridlon = shiftlon.(gridlon);
-        close(ds)
+        Dataset(datafile, "r") do ds;
+            # Get coordinates
+            gridlon = coalesce.(NCDatasets.varbyattrib(ds, standard_name="longitude")[1][:])
+            gridlat = coalesce.(NCDatasets.varbyattrib(ds, standard_name="latitude")[1][:]);
+            gridtime = coalesce.(NCDatasets.varbyattrib(ds, standard_name="time")[1][:]);
+            gridval = coalesce.(NCDatasets.varbyattrib(ds, standard_name=stdname)[1][:], NaN);
+            griderr = coalesce.(NCDatasets.varbyattrib(ds, long_name = "Formal mapping error")[1][:], NaN);
+            # Shift longitudes
+            gridlon = DivandAltimetry.shiftlon.(gridlon);
+        end
     else
-        warn("$(datafile) does not exist")
+        @warn("$(datafile) does not exist")
         gridval,griderr,gridlon,gridlat,gridtime = nothing, nothing, nothing, nothing, nothing
     end
 
