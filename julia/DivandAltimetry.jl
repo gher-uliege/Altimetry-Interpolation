@@ -2,6 +2,7 @@ module DivandAltimetry
 using DIVAnd
 using NCDatasets
 using PyPlot
+using Statistics
 
 """
     shiftlon(longitude)
@@ -84,7 +85,7 @@ function loadaviso_alongtrack(filelist::AbstractVector, stdname::String="sea_sur
 
     nfiles = length(filelist);
     if nfiles == 0
-        warn("Empty file list");
+        @warn("Empty file list");
         obsvallist,obslonlist,obslatlist,obstimelist =
         nothing, nothing, nothing, nothing;
     else
@@ -123,6 +124,9 @@ function loadaviso_gridded(datafile::String, stdname::String="sea_surface_height
             # Shift longitudes
             gridlon = DivandAltimetry.shiftlon.(gridlon);
         end
+
+        gridval = dropdims(gridval; dims=3)
+        griderr = dropdims(griderr; dims=3)
     else
         @warn("$(datafile) does not exist")
         gridval,griderr,gridlon,gridlat,gridtime = nothing, nothing, nothing, nothing, nothing
@@ -151,7 +155,7 @@ Compute the aspect ratio of the map based on the mean latitude.
 
 """
 function get_aspect_ratio(lat::AbstractVector)
-    return 1/cos(mean(lat)) * pi/180;
+    return 1. /cos(mean(lat) * pi/180.0);
 end
 
 
