@@ -47,6 +47,20 @@ function get_file_list(datadir::String, year::Int=0)::Array
     return filelist
 end
 
+"""
+Get the file name of the L4 gridded product for the `time` (days)
+"""
+function get_filename_L4(time::Float64, datadir::String)
+    dateref = DateTime(1, 1, 1)
+    dd = dateref + Dates.Day(time[1] - 1)
+    datestring = Dates.format(dd, "yyyymmdd")
+    datestring2 = Dates.format(dd, "yyyy-mm-dd")
+    datadirL4 = joinpath("$(datadir)/$(Dates.year(dd))/$(lpad(Dates.month(dd), 2, "0"))/")
+    datafilelistL4 = readdir(datadirL4);
+    ind = findall(occursin.(datestring, datafilelistL4))
+    return joinpath(datadirL4, datafilelistL4[ind[1]]), datestring2
+end
+
 
 """
     loadaviso_alongtrack(datafile, varname)
